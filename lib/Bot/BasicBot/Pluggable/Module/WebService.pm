@@ -58,15 +58,6 @@ sub http_handler {
   return RC_OK;
 }
 
-sub seen {
-  my $self = shift;
-  my $mess = shift;
-  warn "seen message $mess->{body}\n";
-  
-  $self->reply($mess, "I saw you say $mess->{body}");
-}
-
-
 sub catch_reply {
   my $self = shift;
   warn "CAUGHT @_\n";
