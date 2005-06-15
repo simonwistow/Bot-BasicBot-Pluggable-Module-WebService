@@ -30,6 +30,8 @@ sub http_handler {
   my ($request, $response) = @_;
   warn "request for ".$request->uri;
 
+  $self->{reply_catcher} = [];
+
   # this is the canonical Thing You Do Not Do. Don't do it.
   my $q = $request->uri->equery;
   $q =~ s/%(\d\d)/chr(hex($1))/eg;
@@ -52,8 +54,6 @@ sub http_handler {
   
   $response->code(RC_OK);
   $response->content(join("\n", @{ $self->{reply_catcher} }, $reply ) );
-
-  delete $self->{reply_catcher};
 
   return RC_OK;
 }
