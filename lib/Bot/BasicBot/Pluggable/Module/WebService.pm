@@ -3,6 +3,7 @@ use base qw( Bot::BasicBot::Pluggable::Module );
 
 use warnings;
 use strict;
+use URI::Query;
 
 use POE::Component::Server::HTTP;
 
@@ -34,13 +35,16 @@ sub http_handler {
 
   # this is the canonical Thing You Do Not Do. Don't do it.
   my $q = $request->uri->equery;
-  $q =~ s/%(\d\d)/chr(hex($1))/eg;
-  my %hash = split(/[\&\=]/, $q);
-  
+
+  my $qq = URI::Query->new($q);
+  #$q =~ s/%(\d\d)/chr(hex($1))/eg;
+  #my %hash = split(/[\&\=]/, $q);
+  my %hash  = $qq->hash;  
+
   use Data::Dumper;
   
   my $mess = {
-    who => $hash{who} || "jerakeen",
+    who => $hash{who} || $request->from || "friend",
     body => $hash{body} || $hash{'q'},
     channel => 'msg',
     address => 'msg',
@@ -49,7 +53,7 @@ sub http_handler {
   
   my $reply = $self->bot->said($mess);
   
-  warn Dumper($mess, $reply, $self->{reply_catcher});
+  # warn Dumper($mess, $reply, $self->{reply_catcher});
   
   
   $response->code(RC_OK);
